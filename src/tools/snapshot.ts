@@ -48,7 +48,10 @@ export const click: Tool = {
 
   handle: async (context, params) => {
     const validatedParams = elementSchema.parse(params);
-    return runAndWait(context, `"${validatedParams.element}" clicked`, () => context.refLocator(validatedParams.ref).click(), true);
+    return runAndWait(context, `"${validatedParams.element}" clicked`, async () => {
+      await context.refLocator(validatedParams.ref).click();
+      return `HTML: ${await context.refLocator(validatedParams.ref).innerHTML()}`;
+    }, true);
   },
 };
 
@@ -72,6 +75,7 @@ export const drag: Tool = {
       const startLocator = context.refLocator(validatedParams.startRef);
       const endLocator = context.refLocator(validatedParams.endRef);
       await startLocator.dragTo(endLocator);
+      return `Start Element HTML: ${await startLocator.innerHTML()}\nEnd Element HTML: ${await endLocator.innerHTML()}`;
     }, true);
   },
 };
@@ -85,7 +89,10 @@ export const hover: Tool = {
 
   handle: async (context, params) => {
     const validatedParams = elementSchema.parse(params);
-    return runAndWait(context, `Hovered over "${validatedParams.element}"`, () => context.refLocator(validatedParams.ref).hover(), true);
+    return runAndWait(context, `Hovered over "${validatedParams.element}"`, async () => {
+      await context.refLocator(validatedParams.ref).hover();
+      return `HTML: ${await context.refLocator(validatedParams.ref).innerHTML()}`;
+    }, true);
   },
 };
 
@@ -108,6 +115,7 @@ export const type: Tool = {
       await locator.fill(validatedParams.text);
       if (validatedParams.submit)
         await locator.press('Enter');
+      return `HTML: ${await locator.innerHTML()}`;
     }, true);
   },
 };
@@ -128,6 +136,7 @@ export const selectOption: Tool = {
     return await runAndWait(context, `Selected option in "${validatedParams.element}"`, async () => {
       const locator = context.refLocator(validatedParams.ref);
       await locator.selectOption(validatedParams.values);
+      return `HTML: ${await locator.innerHTML()}`;
     }, true);
   },
 };
